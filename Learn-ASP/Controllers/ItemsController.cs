@@ -1,6 +1,7 @@
 ﻿using Learn_ASP.Data;
 using Learn_ASP.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Learn_ASP.Controllers
@@ -14,15 +15,25 @@ namespace Learn_ASP.Controllers
 		}
 		public async Task<IActionResult> Index()
 		{
-			var items = await _context.Items.ToListAsync();
+			var items = await _context.Items.Include(i => i.SerialNumber)
+				.Include(x => x.Category)
+				.Include(ic => ic.ItemClients)
+				.ThenInclude(c => c.Client)
+				.ToListAsync();
 			return View(items);
+		}
+
+		private void LoadCategoriesItem()
+		{
+			ViewData["Categories"] = new SelectList(_context.Categories, "Id", "Name");
 		}
 		public IActionResult Create()
 		{
+			LoadCategoriesItem();
 			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> Create([Bind("Id, Name, Price")] Item item)
+		public async Task<IActionResult> Create([Bind("Id, Name, Price, CategoryId")] Item item)
 		{
 			if (ModelState.IsValid)
 			{
@@ -34,11 +45,12 @@ namespace Learn_ASP.Controllers
 		}
 		public async Task<IActionResult> Edit(int id)
 		{
+			LoadCategoriesItem();
 			var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
 			return View(item);
 		}
 		[HttpPost]
-		public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Price")] Item item)
+		public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Price, CategoryId")] Item item)
 		{
 			if (ModelState.IsValid)
 			{

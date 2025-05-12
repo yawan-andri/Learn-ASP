@@ -3,6 +3,7 @@ using Learn_ASP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Learn_ASP.Migrations
 {
     [DbContext(typeof(LearnASPContext))]
-    partial class LearnASPContextModelSnapshot : ModelSnapshot
+    [Migration("20250512031711_One to Many")]
+    partial class OnetoMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,23 +53,6 @@ namespace Learn_ASP.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Learn_ASP.Models.Client", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Clients");
-                });
-
             modelBuilder.Entity("Learn_ASP.Models.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -102,21 +88,6 @@ namespace Learn_ASP.Migrations
                             Price = 200000.0,
                             SerialNumberID = 1
                         });
-                });
-
-            modelBuilder.Entity("Learn_ASP.Models.ItemClient", b =>
-                {
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ItemId", "ClientId");
-
-                    b.HasIndex("ClientId");
-
-                    b.ToTable("ItemsClients");
                 });
 
             modelBuilder.Entity("Learn_ASP.Models.SerialNumber", b =>
@@ -160,25 +131,6 @@ namespace Learn_ASP.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Learn_ASP.Models.ItemClient", b =>
-                {
-                    b.HasOne("Learn_ASP.Models.Client", "Client")
-                        .WithMany("ItemClients")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Learn_ASP.Models.Item", "Item")
-                        .WithMany("ItemClients")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Item");
-                });
-
             modelBuilder.Entity("Learn_ASP.Models.SerialNumber", b =>
                 {
                     b.HasOne("Learn_ASP.Models.Item", "Item")
@@ -193,15 +145,8 @@ namespace Learn_ASP.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Learn_ASP.Models.Client", b =>
-                {
-                    b.Navigation("ItemClients");
-                });
-
             modelBuilder.Entity("Learn_ASP.Models.Item", b =>
                 {
-                    b.Navigation("ItemClients");
-
                     b.Navigation("SerialNumber");
                 });
 #pragma warning restore 612, 618
